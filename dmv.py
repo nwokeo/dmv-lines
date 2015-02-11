@@ -25,9 +25,7 @@ traces = []
 inited = []
 
 credentials = tls.get_credentials_file()                                    
-#print credentials        
-    
-#dont init if it already exists
+
 class Trace():
     def __init__(self, id, name):
         self.name = name
@@ -114,15 +112,14 @@ def plot(traces):
     data = Data(scatterObjs)
     layout = Layout(title='Cantral LA DMV Non-Apointment Wait Times: ' + datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d'))
     fig = Figure(data=data, layout=layout)                                      
-    #print fig.to_string()                                                       
     x = py.plot(fig, filename='DMV', auto_open=False)                           
     print x   
     
 def main():
     while True:
         dbData = polldmv()
-        print dbData
-        writetodb(dbData)
+        if dbData:
+            writetodb(dbData)
         plot(traces)
         time.sleep(300) #refresh every 5 mins
     
