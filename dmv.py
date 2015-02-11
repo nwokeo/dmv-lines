@@ -1,10 +1,17 @@
-from urllib2 import urlopen
+import urllib2
 import dataset #http://dataset.readthedocs.org/en/latest/freezefile.html
 import time, datetime
+from time import gmtime
 import plotly.tools as tls                                                  
 import plotly.plotly as py                                                  
 from plotly.graph_objs import Figure, Data, Layout, Scatter 
 import random
+import os
+
+#source: http://apps.dmv.ca.gov/web/fomap.html?itemType=fo&officeNumber=502
+
+os.environ['TZ'] = 'US/Pacific'
+time.tzset()
 
 #intialize DB
 db = dataset.connect('sqlite:///dmv.db')
@@ -12,6 +19,7 @@ table = db['dmv']
 
 #initialize vars
 target_branches = [502, 617, 508, 652, 510, 511, 576]
+branch_names = {'502':"Los Angeles", '617':"Lincoln Park", '508':"Hollywood", '652':"West Hollywood", '510':"Glendale", '511':"Montebello", '576':"Bell Gardens"}
 dmvUrl = 'http://apps.dmv.ca.gov/fodata/Output2.txt'
 traces = []
 inited = []
@@ -57,30 +65,34 @@ def tomins(hhmm):
     return int(h) * 60 + int(m)
 
 def polldmv():
-    data = urlopen(dmvUrl).readlines()[1:]
-    dbData = []
-    for line in data:
-        try:
-            if int(line[:3]) in target_branches:
-                dataArray = line.rstrip().rsplit(',')
-                if dataArray[1].find(':') == 1:
-                    dataArray[1] = tomins(dataArray[1])
-                if dataArray[2].find(':') == 1:
-                    dataArray[2] = tomins(dataArray[2])
-                if dataArray[0] not in inited:
-                    traces.append(Trace(dataArray[0], str(dataArray[0]))) #TODO: lookup branch name
-                    inited.append(dataArray[0])
-                #append to global array
-                for trace in traces:
-                    if dataArray[0] == trace.getName():
-                        trace.updateWait(dataArray[1], dataArray[2], datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'))
-                        #temp: until offices open
-                        #trace.updateWait(random.randrange(0,120), random.randrange(0,120), datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'))
-                #append to local db array
-                dbData.append(dataArray)
-        except ValueError as e:
-            print e
-    return dbData
+    try:
+        data = urllib2.urlopen(dmvUrl).readlines()[1:]
+        dbData = []
+        for line in data:
+            try:
+                if int(line[:3]) in target_branches:
+                    dataArray = line.rstrip().rsplit(',')
+                    if dataArray[1].find(':') == 1:
+                        dataArray[1] = tomins(dataArray[1])
+                    if dataArray[2].find(':') == 1:
+                        dataArray[2] = tomins(dataArray[2])
+                    if dataArray[0] not in inited:
+                        traces.append(Trace(dataArray[0], str(dataArray[0]))) #TODO: lookup branch name
+                        inited.append(dataArray[0])
+                    #append to global array
+                    for trace in traces:
+                        if dataArray[0] == trace.getName():
+                            trace.updateWait(dataArray[1], dataArray[2], datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')) 
+                    #append to local db array
+                    dbData.append(dataArray)
+            except ValueError as e:
+                print e
+        return dbData
+    except urllib2.HTTPError, e:
+        print e.code
+    except urllib2.URLError, e:
+        print e.args
+
 
 def writetodb(data):
     for dataArray in data:
@@ -97,10 +109,10 @@ def plot(traces):
         scatterObjs.append(Scatter(x=trace.getUpdate(), 
             y=trace.getNoApptValue(),
             mode='lines', 
-            name=trace.getName()
+            name=branch_names[trace.getName()]
             ))
     data = Data(scatterObjs)
-    layout = Layout(title='Selected LA DMV Field Office Wait Times')                           
+    layout = Layout(title='Cantral LA DMV Non-Apointment Wait Times: ' + datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d'))
     fig = Figure(data=data, layout=layout)                                      
     #print fig.to_string()                                                       
     x = py.plot(fig, filename='DMV', auto_open=False)                           
@@ -109,9 +121,10 @@ def plot(traces):
 def main():
     while True:
         dbData = polldmv()
+        print dbData
         writetodb(dbData)
         plot(traces)
-        time.sleep(120) #refresh every 2 mins
+        time.sleep(300) #refresh every 5 mins
     
 if __name__=='__main__':
     main()
