@@ -110,7 +110,7 @@ def plot(traces):
             name=branch_names[trace.getName()]
             ))
     data = Data(scatterObjs)
-    layout = Layout(title='Cantral LA DMV Non-Apointment Wait Times: ' + datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d'))
+    layout = Layout(title='Central LA DMV Non-Apointment Wait Times: ' + datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d'))
     fig = Figure(data=data, layout=layout)                                      
     x = py.plot(fig, filename='DMV', auto_open=False)                           
     print x   
