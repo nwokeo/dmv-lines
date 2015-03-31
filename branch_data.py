@@ -29,7 +29,8 @@ def getTimes():
                     dataArray[2] = tomins(dataArray[2])
                 name = getOffices(dataArray[0])[0]
                 address = getOffices(dataArray[0])[1]
-                branchData.append({'id':dataArray[0], 'appt':dataArray[1], 'nonAppt':dataArray[2], 'name':name, 'address':address })
+                #branchData.append({'id':dataArray[0], 'appt':dataArray[1], 'nonAppt':dataArray[2], 'name':name, 'address':address })
+                branchData.append({'id':dataArray[0], 'name':name, 'address':address, 'nonAppt':dataArray[2] })
             except ValueError as e:
                 print e
         print json.dumps(branchData)

@@ -20,7 +20,7 @@ table = db['dmv']
 #initialize vars
 target_branches = [502, 617, 508, 652, 510, 511, 576]
 branch_names = {'502':"Los Angeles", '617':"Lincoln Park", '508':"Hollywood", '652':"West Hollywood", '510':"Glendale", '511':"Montebello", '576':"Bell Gardens"}
-dmvUrl = 'http://apps.dmv.ca.gov/fodata/Output2.txt'
+dmvUrl = ''
 traces = []
 inited = []
 
@@ -111,7 +111,8 @@ def plot(traces):
             ))
     data = Data(scatterObjs)
     layout = Layout(title='Central LA DMV Non-Apointment Wait Times: ' + datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d'))
-    fig = Figure(data=data, layout=layout)                                      
+    fig = Figure(data=data, layout=layout)         
+    #TODO: trap plotly ConnectionError
     x = py.plot(fig, filename='DMV', auto_open=False)                           
     print x   
     
