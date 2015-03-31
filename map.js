@@ -3,31 +3,39 @@ var geocoder;
 var bounds = new google.maps.LatLngBounds();
 var markersArray = [];
 
-//TODO: get this from input
+//TODO: get this from geo IP
 var origin1 = '90026'; //default origin
 
-//TODO: get this from DMV data source. limit area somehow?
-var destinationA = '9520 East Artesia Blvd. Bellflower, CA 90706';
-var destinationB = new google.maps.LatLng(34.022569, -118.280258);
+//limited to 10 results. buy biz license or ?
+var destinations = [];
+var times = [];
+var officeUrl ='https://dmv-obiike.c9.io/dmv-lines/offices.json' //TODO: retrieve from API
+$.getJSON(officeUrl, function(json) {
+    for (office in json) {
+      destinations.push(json[office].address); // json[office].address
+      times.push(json[office].nonAppt);
+    }
+});
 
 var destinationIcon = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=D|FF0000|000000'; //TODO: dynamic naming
 var originIcon = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=O|FFFF00|000000';
 
 function initialize() {
   var opts = {
-    center: new google.maps.LatLng(34.078732, -118.262448),
+    center: new google.maps.LatLng(34.078732, -118.262448), //dynamic?
     zoom: 10
   };
   map = new google.maps.Map(document.getElementById('map-canvas'), opts);
   geocoder = new google.maps.Geocoder();
 }
 
-function calculateDistances(origin) { //todo: geocode origins, get destinations from dmv source
+function calculateDistances(origin) {
+  //console.log(origin);
   var service = new google.maps.DistanceMatrixService();
   service.getDistanceMatrix(
     {
       origins: [origin],
-      destinations: [destinationA, destinationB], //TODO: get array of destinations
+      destinations: destinations,
       travelMode: google.maps.TravelMode.DRIVING,
       unitSystem: google.maps.UnitSystem.IMPERIAL, //or METRIC
       avoidHighways: false,
@@ -48,32 +56,42 @@ function callback(response, status) {
     var tableRef = document.getElementById("myTable");
   
     for (var i = 0; i < origins.length; i++) {
+      //build one array per origin, one object per destination
+      originResults = [];
+
       var results = response.rows[i].elements; 
 
-      //sort by asc duration
-      results.sort(function (a, b) {
-		  if (a.duration.value > b.duration.value) {
-		    return 1;
-		  }
-		  if (a.duration.value < b.duration.value) {
-		    return -1;
-		  }
-		  return 0;
-	  });
-
       //TODO: move this
-      var rows = '<tr><td>Origin</td><td>Destination</td><td>Distance</td><td>Duration</td></tr>'
+      var rows = '<tr><td>Destination</td><td>Distance</td><td>Drive Time</td><td>Wait Time</td></tr>'
       var thead = document.querySelector("#results thead");
       var tr = document.createElement("tr");
       tr.innerHTML = rows;
-      thead.appendChild(tr)
+      thead.appendChild(tr);
+      
+      //build object
+      for (var j = 0; j < results.length; j++) {
+        originResults.push({"destination":destinations[j], "distance":results[j].distance.text, "duration":results[j].duration.text, "time":times[j]});
+      }
+
+      //sort by asc (duration+wait time)
+      function compare(a,b) {
+        if ( (parseInt(a.duration.substr(0,a.duration.indexOf(' '))) + parseInt(a.time)) < (parseInt(b.duration.substr(0,b.duration.indexOf(' '))) + parseInt(b.time)))
+           return -1;
+        if ((parseInt(a.duration.substr(0,a.duration.indexOf(' '))) + parseInt(a.time)) > (parseInt(b.duration.substr(0,b.duration.indexOf(' '))) + parseInt(b.time)))
+          return 1;
+        return 0;
+      }
+
+      originResults.sort(compare);
+	    originResults = originResults.slice(0,5); //keep top 5
+
       
       addMarker(origins[i], false);
-      for (var j = 0; j < results.length; j++) {
-        addMarker(destinations[j], true);
+      for (var j = 0; j < originResults.length; j++) {
+        addMarker(originResults[j].destination, true);
         
         //TODO: move this
-        rows = "<td>" + origins[i] + "</td><td>" + destinations[j] + "</td><td>" + results[j].distance.text + "</td><td>" + results[j].duration.text + "</td>";
+        rows = "<td>" + originResults[j].destination + "</td><td>" + originResults[j].distance + "</td><td>" + originResults[j].duration + "</td><td>" + originResults[j].time + "</td>";
         var tbody = document.querySelector("#results tbody");
         tr = document.createElement("tr");
         tr.innerHTML = rows;
@@ -81,6 +99,7 @@ function callback(response, status) {
       }
     }
   }
+  
 }
 
 function addMarker(location, isDestination) {
