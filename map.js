@@ -9,12 +9,17 @@ var origin1 = '90026'; //default origin
 //limited to 10 results. buy biz license or ?
 var destinations = [];
 var times = [];
-var officeUrl ='https://dmv-obiike.c9.io/dmv-lines/offices.json' //TODO: retrieve from API
-$.getJSON(officeUrl, function(json) {
+var officeUrl ='https://dmv-obiike.c9.io/dmv-lines/offices.json?callback=abc123' //TODO: retrieve from API
+$.ajax({
+  url: officeUrl,
+  dataType: "jsonp",
+  jsonpCallback: "abc123", /* Unique function name */
+  success: function(json){
     for (office in json) {
       destinations.push(json[office].address); // json[office].address
       times.push(json[office].nonAppt);
-    }
+    } 
+  }
 });
 
 var destinationIcon = 'https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=D|FF0000|000000'; //TODO: dynamic naming
