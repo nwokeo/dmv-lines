@@ -8,7 +8,7 @@ from plotly.graph_objs import Figure, Data, Layout, Scatter
 import random
 import os
 
-#source: http://apps.dmv.ca.gov/web/fomap.html?itemType=fo&officeNumber=502
+#source: http://apps.dmv.ca.gov
 
 os.environ['TZ'] = 'US/Pacific'
 time.tzset()
