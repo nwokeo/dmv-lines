@@ -35,7 +35,6 @@ function initialize() {
 }
 
 function calculateDistances(origin) {
-  //console.log(origin);
   var service = new google.maps.DistanceMatrixService();
   service.getDistanceMatrix(
     {
