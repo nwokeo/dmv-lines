@@ -1,0 +1,208 @@
+<!DOCTYPE HTML>
+<!--
+	Read Only by HTML5 UP
+	html5up.net | @n33co
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>California DMV Wait Times</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.scrollzer.min.js"></script>
+		<script src="js/jquery.scrolly.min.js"></script>
+		<script src="js/skel.min.js"></script>
+		<script src="js/skel-layers.min.js"></script>
+		<script src="js/init.js"></script>
+		
+		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+		<script src="map.js"></script>
+        
+		<noscript>
+			<link rel="stylesheet" href="css/skel.css" />
+			<link rel="stylesheet" href="css/style.css" />
+			<link rel="stylesheet" href="css/style-xlarge.css" />
+		</noscript>
+    
+		<!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
+		
+		<style>
+	      html, body {
+	        height: 100%;
+	        margin: 0;
+	        padding: 0;
+	      }
+	
+	      #map-canvas {
+	        height: 300px;
+	        width: 100%;
+	        
+	      }
+
+	    </style>
+	</head>
+	<body>
+		<div id="wrapper">
+
+			<!-- Header -->
+				<section id="header" class="skel-layers-fixed">
+					<header>
+						<span class="image avatar"><img src="" alt="" /></span>
+						<h1 id="logo"><a href="#">DMV Wait Times</a></h1>
+						<p>Plan DMV visits... with data!</p>
+					</header>
+					<nav id="nav">
+						<ul>
+							<li><a href="#one">Welcome!</a></li>
+							<li><a href="#chart">Today's Wait</a></li>
+							<li><a href="#predict" class="active">Fastest Line</a></li>
+							<li><a href="#history">Historical Statistics</a></li>
+							<li><a href="#about">About</a></li>
+							<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+							<!-- dmv1 -->
+							<ins class="adsbygoogle"
+							     style="display:block"
+							     data-ad-client="ca-pub-1638390998293839"
+							     data-ad-slot="8945247700"
+							     data-ad-format="auto"></ins>
+							<script>
+							(adsbygoogle = window.adsbygoogle || []).push({});
+							</script>
+							
+						</ul>
+					</nav>
+					<footer>
+						<ul class="icons">
+							<li><a href="https://twitter.com/CaDMVwait" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
+							<li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
+							<li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li>
+							<li><a href="https://github.com/nwokeo/dmv-lines" class="icon fa-github"><span class="label">Github</span></a></li>
+							<li><a href="mailto:perfecttarget@gmail.com" class="icon fa-envelope"><span class="label">Email</span></a></li>
+						</ul>
+					</footer>
+				</section>
+
+			<!-- Main -->
+				<div id="main">
+					<section id="one">
+						<div class="container">
+							<header class="major">
+								<h2>Stop Wasting Time</h2>
+								<p>Find the shortest wait for California DMV field offices, even without an appointment.</p>
+							</header>
+						</div>
+					</section>
+							   	
+				<!-- Chart -->
+					<section id="chart">
+						<div class="container">
+							<h3>Today's Wait</h3>
+							<!--
+						    <div>
+							    <a href="https://plot.ly/~nwoke/83/" target="_blank" title="LA DMV Field Office Wait Times" style="display: block; text-align: center;"><img src="https://plot.ly/~nwoke/83.png" alt="LA DMV Field Office Wait Times" style="max-width: 100%;"  onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
+							    <script data-plotly="nwoke:83" src="https://plot.ly/embed.js" async></script>
+							</div>
+							-->
+							<iframe width="640" height="480" frameborder="0" seamless="seamless" scrolling="no" src="https://plot.ly/~nwoke/83.embed?width=640&height=480" ></iframe>
+							
+						</div>
+					</section>							   	
+							   	
+				<!-- Predict Form -->
+					<section id="predict">
+						<div class="container">
+							<h3>What's the Best Office to Visit Right Now?</h3>
+							<div id="content-pane">
+						      <div id="inputs">
+						      	<form>
+									<input type="text" placeholder="Search Zip or Address" id="formValueId"/>
+									<button type="button" id="searchButton"/>Search</button>
+									<!-- <input type="submit" value="Submit"> -->
+								</form>
+						      </div>
+						      <div id="outputDiv">
+						      	  <table style="display: none" id="results"> <!-- cellspacing = "0px" cellpadding = "20px" text-align = "center" -->
+						            <thead>
+						            	<tr>
+						            		<td>Destination</td><td>Distance</td><td>Drive Time</td><td>Wait Time</td><td>Total Time</td>
+						            	</tr>
+						            </thead>
+						            <tbody></tbody>
+						        </table>
+						      </div>
+						    </div>
+						    <div id="map-canvas"></div>
+						    
+						</div>
+					</section>
+
+				<!-- History -->
+					<section id="history">
+						<div class="container">
+							<h3>Historical Statistics</h3>
+							<p>We're still collecting data... check back soon!</p>
+						</div>
+					</section>
+
+				<!-- About -->
+					<section id="about">
+						<div class="container">
+							<h3>About</h3>
+							<p><i>DMV Wait Times</i> was designed as a response to the enormous and growing lines for California DMV field offices. 
+							California has about 38 million residents, 31 million of whom have drivers licenses or IDs, with 33 million registered vehicles. 
+							<a href="http://apps.dmv.ca.gov/about/profile/official.pdf">(source)</a> Needless to say, that's a lot of paperwork.</p>
+							
+							<p>Further, Ca Assembly Bill (AB) 60 (Chapter 524: Statutes of 2013) was put into effect in 2015. Officially:
+							<blockquote cite="http://dmv.ca.gov/portal/dmv/detail/ab60/index?lang=en">
+								This requires the department to issue an original driver license to an applicant who is unable to submit satisfactory proof of legal presence in the United States. 
+								<footer>— <a href="http://dmv.ca.gov/portal/dmv/detail/ab60/index?lang=en">AB60 Driver License Implementation</a></footer>
+							</blockquote>
+							
+							<p>That's great news for many California families, but the governmental resources don't always have the capacity to handle this excess documentation.</p>
+							
+							<p>That's where we come in. Using the power of our analytical decision platform, we analyze all of the DMV data to provide easy access to the question we all want to know: what's the fastest line?</p>
+						</div>
+					</section>
+				</div>
+
+			<!-- Footer -->
+				<section id="footer">
+					<div class="container">
+						<ul class="copyright">
+							<li>Code: <a href="http://nwoke.com">Obi Nwoke</a></li>
+							<li>Data: <a href="http://apps.dmv.ca.gov/web/fomap.html">California DMV</a></li>
+							<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+						</ul>
+					</div>
+				</section>
+
+		</div>
+
+		<script>
+			$(document).ready(function() {
+			    $('#searchButton').click(function() {
+			      	callHaversine($('#formValueId').val());
+  					$( "#results" ).show( "slow" );
+			    });
+			    
+				$('#formValueId').keypress(function(e){ //TODO: refreshes page when called. why?
+			        if(e.which == 13){ //Enter key
+			            callHaversine($('#formValueId').val());
+			        }
+			        return event.keyCode != 13;
+			    });
+			});
+			
+            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+            e.src='//www.google-analytics.com/analytics.js';
+            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+            ga('create','UA-59451715-1','auto');ga('send','pageview');
+            
+        </script>
+	</body>
+</html>

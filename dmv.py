@@ -7,6 +7,7 @@ import plotly.plotly as py
 from plotly.graph_objs import Figure, Data, Layout, Scatter 
 import random
 import os
+import json
 
 #source: http://apps.dmv.ca.gov
 
@@ -17,10 +18,16 @@ time.tzset()
 db = dataset.connect('sqlite:///dmv.db')
 table = db['dmv']
 
-#initialize vars
-target_branches = [502, 617, 508, 652, 510, 511, 576]
-branch_names = {'502':"Los Angeles", '617':"Lincoln Park", '508':"Hollywood", '652':"West Hollywood", '510':"Glendale", '511':"Montebello", '576':"Bell Gardens"}
-dmvUrl = ''
+#initialize vars 
+#TODO: get rid of these. branch names from branch_data.json, limit targets by geo.
+#target_branches = [502, 617, 508, 652, 510, 511, 576]
+#branch_names = {'502':"Los Angeles", '617':"Lincoln Park", '508':"Hollywood", '652':"West Hollywood", '510':"Glendale", '511':"Montebello", '576':"Bell Gardens"}
+dmvUrl = 'http://apps.dmv.ca.gov/fodata/Output2.txt'
+
+f = open('branch_data.json');
+full_offices = json.loads(f.read());
+f.close();
+
 traces = []
 inited = []
 
@@ -56,7 +63,7 @@ class Trace():
         
     def showData(self):
         print self.name, self.apptValue, self.noApptValue, self.update
-    
+
 def tomins(hhmm):
     h = hhmm.split(':')[0]
     m = hhmm.split(':')[1]
@@ -68,21 +75,21 @@ def polldmv():
         dbData = []
         for line in data:
             try:
-                if int(line[:3]) in target_branches:
-                    dataArray = line.rstrip().rsplit(',')
-                    if dataArray[1].find(':') == 1:
-                        dataArray[1] = tomins(dataArray[1])
-                    if dataArray[2].find(':') == 1:
-                        dataArray[2] = tomins(dataArray[2])
-                    if dataArray[0] not in inited:
-                        traces.append(Trace(dataArray[0], str(dataArray[0]))) #TODO: lookup branch name
-                        inited.append(dataArray[0])
-                    #append to global array
-                    for trace in traces:
-                        if dataArray[0] == trace.getName():
-                            trace.updateWait(dataArray[1], dataArray[2], datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')) 
-                    #append to local db array
-                    dbData.append(dataArray)
+                #if int(line[:3]) in target_branches:
+                dataArray = line.rstrip().rsplit(',')
+                if dataArray[1].find(':') == 1:
+                    dataArray[1] = tomins(dataArray[1])
+                if dataArray[2].find(':') == 1:
+                    dataArray[2] = tomins(dataArray[2])
+                if dataArray[0] not in inited:
+                    traces.append(Trace(dataArray[0], str(dataArray[0]))) #TODO: lookup branch name
+                    inited.append(dataArray[0])
+                #append to global array
+                for trace in traces:
+                    if dataArray[0] == trace.getName():
+                        trace.updateWait(dataArray[1], dataArray[2], datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')) 
+                #append to local db array
+                dbData.append(dataArray)
             except ValueError as e:
                 print e
         return dbData
@@ -90,7 +97,6 @@ def polldmv():
         print e.code
     except urllib2.URLError, e:
         print e.args
-
 
 def writetodb(data):
     for dataArray in data:
@@ -107,7 +113,8 @@ def plot(traces):
         scatterObjs.append(Scatter(x=trace.getUpdate(), 
             y=trace.getNoApptValue(),
             mode='lines', 
-            name=branch_names[trace.getName()]
+            #name=branch_names[trace.getName()] 
+            name=getOfficeName(trace.getName()) #read these from file. TODO: rename trace.getName?
             ))
     data = Data(scatterObjs)
     layout = Layout(title='Central LA DMV Non-Apointment Wait Times: ' + datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d'))
@@ -115,10 +122,41 @@ def plot(traces):
     #TODO: trap plotly ConnectionError
     x = py.plot(fig, filename='DMV', auto_open=False)                           
     print x   
-    
+
+def getOfficeName(id):
+    id = int(id)
+    for office in full_offices:
+        if office['id'] == id:
+            return office['name']
+
+def getOfficeAddress(id):
+    id = int(id)
+    for office in full_offices:
+        if office['id'] == id:
+            return office['address']
+            
+def getOfficeCoords(id):
+    id = int(id)
+    for office in full_offices:
+        if office['id'] == id:
+            return office['coords']
+
+#update pseudo API file
+def printTrace(traces):
+    a = []
+    for trace in traces:
+        d = { 'address':getOfficeAddress(trace.getId()), 'nonAppt':int(trace.getNoApptValue()[-1]), 'id':int(trace.getId()), 'name':getOfficeName(trace.getId()), 'coords':getOfficeCoords(trace.getId()) }
+        a.append(d)
+    with open('offices.json', 'w') as fp:
+        fp.write('abc123(')
+        json.dump(a, fp)
+        fp.write(');')
+    fp.close()
+        
 def main():
     while True:
         dbData = polldmv()
+        printTrace(traces)
         if dbData:
             writetodb(dbData)
         plot(traces)
