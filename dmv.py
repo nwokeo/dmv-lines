@@ -20,7 +20,7 @@ table = db['dmv']
 
 #initialize vars 
 #TODO: get rid of these. branch names from branch_data.json, limit targets by geo.
-#target_branches = [502, 617, 508, 652, 510, 511, 576]
+la_branches = [502, 617, 508, 652, 510, 511, 576]
 #branch_names = {'502':"Los Angeles", '617':"Lincoln Park", '508':"Hollywood", '652':"West Hollywood", '510':"Glendale", '511':"Montebello", '576':"Bell Gardens"}
 dmvUrl = 'http://apps.dmv.ca.gov/fodata/Output2.txt'
 
@@ -110,12 +110,14 @@ def plot(traces):
     scatterObjs = []
     #make scatter objects
     for trace in traces:
-        scatterObjs.append(Scatter(x=trace.getUpdate(), 
-            y=trace.getNoApptValue(),
-            mode='lines', 
-            #name=branch_names[trace.getName()] 
-            name=getOfficeName(trace.getName()) #read these from file. TODO: rename trace.getName?
-            ))
+        #print trace.getName(), la_branches
+        if int(trace.getName()) in la_branches:
+            scatterObjs.append(Scatter(x=trace.getUpdate(), 
+                y=trace.getNoApptValue(),
+                mode='lines', 
+                #name=branch_names[trace.getName()] 
+                name=getOfficeName(trace.getName()) #read these from file. TODO: rename trace.getName?
+                ))
     data = Data(scatterObjs)
     layout = Layout(title='Central LA DMV Non-Apointment Wait Times: ' + datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d'))
     fig = Figure(data=data, layout=layout)         

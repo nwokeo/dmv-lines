@@ -6,7 +6,6 @@ var markersArray = [];
 //TODO: get this from geo IP
 var origin = '90026'; //default origin
 
-//var olddestinations = [];
 var destinations = [];
 var destAddrs = [];
 var destCoords = [];
@@ -36,7 +35,6 @@ function callHaversine(origin){
 //only look at 25 closest DMV offices
 function haversineTest(origin, destinations){ //arr, object
 
-  
   codeAddress(origin, function(locationData) {
     destAddrs = [];
     //geocode origin
@@ -70,7 +68,6 @@ function haversineTest(origin, destinations){ //arr, object
     
     //order by proximity to origin (d)
     destinations.sort(compare);
-	  //keep 25 closest
 	  destinations = destinations.slice(0,20);
 
 	  for (i in destinations){
