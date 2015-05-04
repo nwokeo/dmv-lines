@@ -13,6 +13,7 @@ import json
 
 os.environ['TZ'] = 'US/Pacific'
 time.tzset()
+dayOfWeek = datetime.date.today().weekday()
 
 #intialize DB
 db = dataset.connect('sqlite:///dmv.db')
@@ -73,6 +74,7 @@ def polldmv():
     try:
         data = urllib2.urlopen(dmvUrl).readlines()[1:]
         dbData = []
+        #print data
         for line in data:
             try:
                 #if int(line[:3]) in target_branches:
@@ -123,7 +125,7 @@ def plot(traces):
     fig = Figure(data=data, layout=layout)         
     #TODO: trap plotly ConnectionError
     x = py.plot(fig, filename='DMV', auto_open=False)                           
-    print x   
+    #print x   
 
 def getOfficeName(id):
     id = int(id)
@@ -142,15 +144,22 @@ def getOfficeCoords(id):
     for office in full_offices:
         if office['id'] == id:
             return office['coords']
+            
+def getOfficeHours(id):
+    id = int(id)
+    for office in full_offices:
+        if office['id'] == id:
+            return office['officeHours'].split(',')[dayOfWeek].split('-')
 
 #update pseudo API file
 def printTrace(traces):
+    #print traces
     a = []
     for trace in traces:
-        d = { 'address':getOfficeAddress(trace.getId()), 'nonAppt':int(trace.getNoApptValue()[-1]), 'id':int(trace.getId()), 'name':getOfficeName(trace.getId()), 'coords':getOfficeCoords(trace.getId()) }
+        d = { 'address':getOfficeAddress(trace.getId()), 'nonAppt':int(trace.getNoApptValue()[-1]), 'id':int(trace.getId()), 'name':getOfficeName(trace.getId()), 'coords':getOfficeCoords(trace.getId()), 'officeHours':getOfficeHours(trace.getId()) }
         a.append(d)
     with open('offices.json', 'w') as fp:
-        fp.write('abc123(')
+        fp.write('waitTime(')
         json.dump(a, fp)
         fp.write(');')
     fp.close()

@@ -57,21 +57,10 @@
 					<nav id="nav">
 						<ul>
 							<li><a href="#one">Welcome!</a></li>
-							<li><a href="#chart">Today's Wait</a></li>
 							<li><a href="#predict" class="active">Fastest Line</a></li>
+							<li><a href="#chart">Today's Wait</a></li>
 							<li><a href="#history">Historical Statistics</a></li>
 							<li><a href="#about">About</a></li>
-							<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-							<!-- dmv1 -->
-							<ins class="adsbygoogle"
-							     style="display:block"
-							     data-ad-client="ca-pub-1638390998293839"
-							     data-ad-slot="8945247700"
-							     data-ad-format="auto"></ins>
-							<script>
-							(adsbygoogle = window.adsbygoogle || []).push({});
-							</script>
-							
 						</ul>
 					</nav>
 					<footer>
@@ -95,38 +84,22 @@
 								
 								<!-- todo: use geo IP to put recommended office here -->
 								
+								
 								<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-								<!-- dmv1 -->
 								<ins class="adsbygoogle"
 								     style="display:block"
 								     data-ad-client="ca-pub-1638390998293839"
-								     data-ad-slot="8945247700"
+								     data-ad-slot="3274353706"
 								     data-ad-format="auto"></ins>
 								<script>
 								(adsbygoogle = window.adsbygoogle || []).push({});
 								</script>
+								
 							</header>
 						</div>
 					</section>
-							   	
-				<!-- Chart -->
-					<section id="chart">
-						<div class="container">
-							<h3>Today's Wait</h3>
-							<p>Currently available: Central LA. Other metro areas coming soon.
-							<br/>Want your area represented? <a href="https://twitter.com/CaDMVwait">Get in touch!</a></p>
-							<!--
-						    <div>
-							    <a href="https://plot.ly/~nwoke/83/" target="_blank" title="LA DMV Field Office Wait Times" style="display: block; text-align: center;"><img src="https://plot.ly/~nwoke/83.png" alt="LA DMV Field Office Wait Times" style="max-width: 100%;"  onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
-							    <script data-plotly="nwoke:83" src="https://plot.ly/embed.js" async></script>
-							</div>
-							-->
-							<iframe width="640" height="480" frameborder="0" seamless="seamless" scrolling="no" src="https://plot.ly/~nwoke/83.embed?width=640&height=480" ></iframe>
-							
-						</div>
-					</section>							   	
-							   	
-				<!-- Predict Form -->
+				
+					<!-- Predict Form -->
 					<section id="predict">
 						<div class="container">
 							<h3>What's the Best Office to Visit Right Now?</h3>
@@ -152,6 +125,25 @@
 						    
 						</div>
 					</section>
+					
+					<!-- Chart -->
+					<section id="chart">
+						<div class="container">
+							<h3>Today's Wait</h3>
+							<p>Currently available: Central LA. Other metro areas coming soon.
+							<br/>Want your area represented? <a href="https://twitter.com/CaDMVwait">Get in touch!</a></p>
+							<!--
+						    <div>
+							    <a href="https://plot.ly/~nwoke/83/" target="_blank" title="LA DMV Field Office Wait Times" style="display: block; text-align: center;"><img src="https://plot.ly/~nwoke/83.png" alt="LA DMV Field Office Wait Times" style="max-width: 100%;"  onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
+							    <script data-plotly="nwoke:83" src="https://plot.ly/embed.js" async></script>
+							</div>
+							-->
+							<h5>Central Los Angeles</h5>
+							<iframe width="640" height="480" frameborder="0" seamless="seamless" scrolling="no" src="https://plot.ly/~nwoke/83.embed?width=640&height=480" ></iframe>
+							
+						</div>
+					</section>							   	
+							   
 
 				<!-- History -->
 					<section id="history">
@@ -194,17 +186,19 @@
 				</section>
 
 		</div>
-
+		
 		<script>
+		
 			$(document).ready(function() {
 			    $('#searchButton').click(function() {
-			      	callHaversine($('#formValueId').val());
+			      	calcWaitTimes.callHaversine($('#formValueId').val());
   					$( "#results" ).show( "slow" );
 			    });
 			    
-				$('#formValueId').keypress(function(e){ //TODO: refreshes page when called. why?
+				$('#formValueId').keypress(function(e){
 			        if(e.which == 13){ //Enter key
-			            callHaversine($('#formValueId').val());
+			            calcWaitTimes.callHaversine($('#formValueId').val());
+			            $( "#results" ).show( "slow" );
 			        }
 			        return event.keyCode != 13;
 			    });
@@ -216,6 +210,7 @@
             e.src='//www.google-analytics.com/analytics.js';
             r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
             ga('create','UA-59451715-1','auto');ga('send','pageview');
+            
             
         </script>
 	</body>

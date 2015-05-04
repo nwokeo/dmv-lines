@@ -11,7 +11,7 @@ def getOffices():
     f = open(officeDataFile)
     data = json.loads(f.read())['foims_offices']['offices']
     for office in data:
-        branchData.append({'id':office['number'], 'name':office['name'], 'address':office['address'], 'coords': [office['latitude'], office['longitude']]})
+        branchData.append({'id':office['number'], 'name':office['name'], 'address':office['address'], 'coords': [office['latitude'], office['longitude']], 'officeHours':office['officeHours'] })
     #print branchData
     with open('branch_data.json', 'w') as fp:
         json.dump(branchData, fp)
