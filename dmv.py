@@ -170,8 +170,9 @@ def main():
         printTrace(traces)
         if dbData:
             writetodb(dbData)
+ 	# todo: refresh data every 5 minutes, plotly every 20
         plot(traces)
-        time.sleep(300) #refresh every 5 mins
+        time.sleep(900) #refresh every 15 mins (plotly limit of 50/day)
     
 if __name__=='__main__':
     main()
