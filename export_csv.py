@@ -3,7 +3,7 @@ db = dataset.connect('sqlite:///dmv.db')
 #print(db.tables)
 #print(db['dmv'].columns)
 result = db['dmv'].all()
-dataset.freeze(result, format='csv', filename='dmv.csv')
+dataset.freeze(result, format='csv', filename='../csv/dmv.csv')
 
 #aggregate by hour
 #TODO: exclude closed hours, weekends. also include day of week.
@@ -11,4 +11,4 @@ q = '''SELECT branch, strftime('%H', "update") hour, strftime('%w', "update") da
 result = db.query(q)
 #for row in result:
 #    print row
-dataset.freeze(result, format='csv', filename='dmv_aggregation.csv')
+dataset.freeze(result, format='csv', filename='../csv/dmv_aggregation.csv')
