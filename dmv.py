@@ -8,8 +8,6 @@ import os
 import json
 import configparser
 
-DEBUG = True
-
 config = configparser.ConfigParser()
 config.read('dmv.cfg')
 
@@ -130,7 +128,8 @@ def plot(traces):
     layout = Layout(title='Central LA DMV Non-Apointment Wait Times: ' + datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d'))
     fig = Figure(data=data, layout=layout)         
     #TODO: trap plotly ConnectionError
-    x = py.plot(fig, filename='DMV', auto_open=False)                           
+    x = py.plot(fig, filename='DMV', auto_open=False)
+    print(x)
 
 
 def getOfficeName(id):
@@ -183,14 +182,13 @@ def main():
     while True:
         dbData = polldmv()
         printTrace(traces)
-        if dbData and not DEBUG:
+        print(dbData)
+        if dbData:
             writetodb(dbData)
         # todo: refresh data every 5 minutes, plotly every 20
-        elif not DEBUG:
-            plot(traces)
-            time.sleep(900) #refresh every 15 mins (plotly limit of 50/day)
-        else:
-            time.sleep(10)
+        plot(traces)
+        time.sleep(900) #refresh every 15 mins (plotly limit of 50/day)
+
 
 
 if __name__=='__main__':

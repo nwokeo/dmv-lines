@@ -11,7 +11,7 @@ var calcWaitTimes = (function () {
         destCoords = [],
         //times = [],
         //names = [],
-        officeUrl = 'https://dmv-obiike.c9.io/dmv-lines/offices.json?callback=waitTime'; //TODO: retrieve from API (v2)
+        officeUrl = 'http:///offices.json?callback=waitTime'; //TODO: retrieve from API (v2)
 
     //TODO: wrap in function, dont call haversine unless its "done": 
     //http://stackoverflow.com/questions/24919590/ajax-call-using-iife-cant-seem-to-get-done-to-work-the-same-as-a-regular-func
@@ -43,7 +43,7 @@ var calcWaitTimes = (function () {
         codeAddress(origin, function (locationData) {
             destAddrs = [];
             //geocode origin
-            var originCoords = [ locationData.geometry.location.A, locationData.geometry.location.F ];
+            var originCoords = [ locationData.geometry.location.lat(), locationData.geometry.location.lng() ];
             //calculate distances
             for (var i in destinations) {
               var R = 6371000; // earth's radius in metres
