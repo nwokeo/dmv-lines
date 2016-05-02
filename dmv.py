@@ -125,10 +125,10 @@ def plot(traces):
                 name=getOfficeName(trace.getName()) #read these from file. TODO: rename trace.getName?
                 ))
     data = Data(scatterObjs)
-    layout = Layout(title='Central LA DMV Non-Apointment Wait Times: ' + datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d'))
+    layout = Layout(title='Central LA DMV Non-Appointment Wait Times: ' + datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d'))
     fig = Figure(data=data, layout=layout)         
     #TODO: trap plotly ConnectionError
-    x = py.plot(fig, filename='DMV', auto_open=False)
+    x = py.plot(fig, filename='Central LA DMV', auto_open=False)
     print(x)
 
 
