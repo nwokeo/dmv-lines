@@ -7,6 +7,7 @@ from plotly.graph_objs import Figure, Data, Layout, Scatter
 import os
 import json
 import configparser
+import psycopg2
 
 config = configparser.ConfigParser()
 config.read('dmv.cfg')
@@ -16,11 +17,14 @@ time.tzset()
 dayOfWeek = datetime.date.today().weekday()
 
 #intialize DB
-db = dataset.connect('sqlite:///dmv.db')
-table = db['dmv']
+conn = psycopg2.connect(host=config.get('DATABASE', 'host'),
+                        user=config.get('DATABASE', 'username'),
+                        password=config.get('DATABASE', 'password'),
+                        dbname="reader")
+conn.set_session(autocommit=True)
+cur = conn.cursor()
 
 #initialize vars 
-#TODO: get rid of these. branch names from branch_data.json, limit targets by geo.
 la_branches = [502, 617, 508, 652, 510, 511, 576]
 dmvUrl = config['URLS']['waitdata']
 
@@ -106,12 +110,13 @@ def polldmv():
 
 def writetodb(data):
     for dataArray in data:
-        dataDict = dict(update=datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'),
-                        branch=dataArray[0],
-                        appt=dataArray[1],
-                        nonAppt=dataArray[2])
-        table.insert(dataDict)
-
+        cur.execute(
+            '''insert into dmv.historical_waittimes(
+             appt_wait,
+             non_appt_wait,
+             branch_id)
+             values (%s,%s,%s)''', (int(dataArray[1]), int(dataArray[2]), int(dataArray[0]))
+        )
 
 def plot(traces):
     scatterObjs = []
@@ -182,7 +187,6 @@ def main():
     while True:
         dbData = polldmv()
         printTrace(traces)
-        print(dbData)
         if dbData:
             writetodb(dbData)
         # todo: refresh data every 5 minutes, plotly every 20
